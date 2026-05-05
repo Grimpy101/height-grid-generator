@@ -1,6 +1,17 @@
 # Height Grid Generator
 
-Creates a uniform grid with height information derived from an input point cloud.
+Creates a uniform grid with height information derived from an input point cloud. The point cloud can be in PLY or LAS/LAZ format.
+
+The output can be either a PLY point cloud where each point is a grid vertex, or a custom format of the form:
+
+```
+x y z
+x y z
+x y z
+...
+```
+
+The dimensions of the output grid are printed to the standard output.
 
 Building the program:
 
