@@ -92,15 +92,14 @@ fn main() {
                 args.input_filepath.to_string_lossy()
             )
         });
-        reader
-            .points()
-            .flatten()
-            .map(|p| Point {
-                x: p.x as f32,
-                y: p.y as f32,
-                z: p.z as f32,
-            })
-            .collect::<Vec<Point>>()
+        let n = reader.header().number_of_points() as usize;
+        let mut points = Vec::with_capacity(n);
+        points.extend(reader.points().flatten().map(|p| Point {
+            x: p.x as f32,
+            y: p.y as f32,
+            z: p.z as f32,
+        }));
+        points
     } else {
         panic!(
             "{} is not a valid file extension for the file {}",
@@ -140,24 +139,17 @@ fn main() {
             },
         );
 
-    let x_span = max_x - min_x;
-    let y_span = max_y - min_y;
+    let floor_min_x = min_x.floor();
+    let floor_min_y = min_y.floor();
+    let ceil_max_x = max_x.ceil();
+    let ceil_max_y = max_y.ceil();
+
+    let x_span = ceil_max_x - floor_min_x;
+    let y_span = ceil_max_y - floor_min_y;
     let grid_element_size = args.resolution;
 
     let x_count = (x_span / grid_element_size).ceil().max(1.0) as usize;
     let y_count = (y_span / grid_element_size).ceil().max(1.0) as usize;
-
-    let modified_span_x = x_count as f32 * grid_element_size;
-    let modified_span_y = y_count as f32 * grid_element_size;
-
-    let gap_x = modified_span_x - x_span;
-    let gap_y = modified_span_y - y_span;
-
-    let half_gap_x = gap_x / 2.0;
-    let half_gap_y = gap_y / 2.0;
-
-    let grid_min_x = min_x - half_gap_x + (grid_element_size / 2.0);
-    let grid_min_y = min_y - half_gap_y + (grid_element_size / 2.0);
 
     println!(
         "Creating grid of size {}x{} ({} elements)...",
@@ -168,8 +160,8 @@ fn main() {
 
     let grid = Grid {
         x_count,
-        min_x: grid_min_x,
-        min_y: grid_min_y,
+        min_x: floor_min_x,
+        min_y: floor_min_y,
         element_size: grid_element_size,
     };
 
