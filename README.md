@@ -35,3 +35,8 @@ Options:
   -h, --help                               Print help
   -V, --version                            Print version
 ```
+
+Example usage:
+```
+cargo run --release -- -i /source/GKOT_492_148.laz -o /dest/492_148.xyz --resolution 0.5 --format custom
+```
